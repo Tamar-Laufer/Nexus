@@ -1,0 +1,52 @@
+CREATE DATABASE IF NOT EXISTS jsonplaceholder;
+USE jsonplaceholder;
+
+CREATE TABLE IF NOT EXISTS users (
+  id INT PRIMARY KEY NOT NULL,
+  name VARCHAR(100) NOT NULL DEFAULT '',
+  username VARCHAR(50) NOT NULL UNIQUE,
+  email VARCHAR(100) NOT NULL DEFAULT '',
+  phone VARCHAR(50) DEFAULT '',
+  address_street VARCHAR(100) DEFAULT '',
+  address_suite VARCHAR(50) DEFAULT '',
+  address_city VARCHAR(100) DEFAULT '',
+  address_zipcode VARCHAR(20) DEFAULT '',
+  address_lat VARCHAR(20) DEFAULT '',
+  address_lng VARCHAR(20) DEFAULT '',
+  company_name VARCHAR(100) DEFAULT '',
+  company_catchphrase VARCHAR(255) DEFAULT '',
+  company_bs VARCHAR(255) DEFAULT ''
+);
+
+CREATE TABLE IF NOT EXISTS passwords (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  userId INT NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS todos (
+  id INT PRIMARY KEY NOT NULL,
+  userId INT NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  completed BOOLEAN DEFAULT FALSE,
+  FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS posts (
+  id INT PRIMARY KEY NOT NULL,
+  userId INT NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  body TEXT,
+  FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS comments (
+  id INT PRIMARY KEY NOT NULL,
+  postId INT NOT NULL,
+  name VARCHAR(100) DEFAULT '',
+  email VARCHAR(100) DEFAULT '',
+  body TEXT,
+  FOREIGN KEY (postId) REFERENCES posts(id) ON DELETE CASCADE
+);
+
