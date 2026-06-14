@@ -13,14 +13,12 @@ const PostsList = ({ page }) => {
     <>
       <h2>All Posts</h2>
 
-      {/* טופס הוספת פוסט - כותרת נפרדת כי AddItem תומך בשדה אחד */}
       <div className="add-post-section">
         <input
           placeholder="Title"
           value={newPost.title}
           onChange={(e) => setNewPost(p => ({ ...p, title: e.target.value }))}
         />
-        {/* AddItem מטפל בגוף הפוסט + כפתור Add */}
         <AddItem
           value={newPost.body}
           setValue={(val) => setNewPost(p => ({ ...p, body: val }))}
@@ -41,7 +39,7 @@ const PostsList = ({ page }) => {
       />
 
       {filteredPosts.map(post => (
-        <PostItem  post={post} page={page} />
+        <PostItem key={post.id} post={post} page={page} />
       ))}
 
       {hasMore && (

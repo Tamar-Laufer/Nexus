@@ -8,7 +8,6 @@ const TodosControls = ({ newTodo, setNewTodo, onAdd, search, setSearch, searchBy
       <h2 className="todos-title">My Tasks</h2>
       {error && <div className="error-message">{error}</div>}
 
-      {/* פקדים בשורה אחת: הוספה + חיפוש + מיון */}
       <div className="controls-row">
         <div className="controls-add">
           <AddItem value={newTodo} setValue={setNewTodo} onAdd={onAdd} placeholder="New task" buttonText="Add" />

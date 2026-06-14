@@ -2,14 +2,14 @@ import AddItem    from '../../shared/AddItem';
 import Edit       from '../../shared/Edit';
 import DeleteItem from '../../shared/DeleteItem';
 
-const PostItem = ({ post, page }) => {
+const PostItem = ({post, page }) => {
   const {
     user, getUserName,
     expanded, toggleBody,
     editingPostId, editData, changeEditPost, startEditPost, cancelEditPost, savePost, deletePost,
     activePostId, comments, toggleComments,
     newComment, setNewComment, addComment,
-    editingComment,  cancelEditComment, changeEditComment, saveComment, deleteComment
+    editingComment, startEditComment, cancelEditComment, changeEditComment, saveComment, deleteComment
   } = page;
 
   const isExpanded        = !!expanded[post.id];
@@ -22,9 +22,7 @@ const PostItem = ({ post, page }) => {
 
       {isEditing ? (
         <div className="post-edit-form">
-          {/* כותרת - שדה פשוט (Edit מיועד לשדה אחד, כאן יש גם body) */}
           <input value={editData.title} onChange={(e) => changeEditPost('title', e.target.value)} placeholder="Post title" />
-          {/* גוף הפוסט - משתמש ברכיב Edit הגנרי עם Save/Cancel */}
           <Edit
             value={editData.body}
             setValue={(val) => changeEditPost('body', val)}
@@ -64,18 +62,27 @@ const PostItem = ({ post, page }) => {
           <AddItem value={newComment} setValue={setNewComment} onAdd={addComment} placeholder="Comment..." buttonText="Add" />
 
           {comments.map(comment => (
-            <div key={comment.id} >
+            <div key={comment.id} className="comment-item">
+              {editingComment?.id == comment.id ? (
+                <Edit
+                  value={editingComment.body}
+                  setValue={changeEditComment}
+                  onSave={saveComment}
+                  onCancel={cancelEditComment}
+                  multiline
+                />
+              ) : (
                 <div>
                   <div className="comment-header"><strong>{comment.email}</strong></div>
                   <div>{comment.body}</div>
                   {comment.email === user?.email && (
-                    <div className="comment-item">
-                     <Edit value={editingComment.body} setValue={changeEditComment} onSave={saveComment} onCancel={cancelEditComment} multiline />
+                    <div>
+                      <button onClick={() => startEditComment(comment)}>Edit</button>
                       <DeleteItem onDelete={() => deleteComment(comment)} />
                     </div>
                   )}
                 </div>
-              
+              )}
             </div>
           ))}
         </div>

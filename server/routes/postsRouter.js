@@ -1,10 +1,10 @@
-const express = require('express');                                                                                    // טעינת Express
-const router = express.Router();                                                                                       // יצירת router נפרד
-const { getPostsHandler, createPostHandler, updatePostHandler, deletePostHandler } = require('../controllers/postsController'); // טעינת הפונקציות
+const express = require('express');
+const router = express.Router();
+const { getPostsHandler, createPostHandler, updatePostHandler, deletePostHandler } = require('../controllers/postsController');
 
-router.get('/', getPostsHandler);         // GET /posts או GET /posts?_start=X&_limit=Y - שליפת פוסטים עם פגינציה
-router.post('/', createPostHandler);      // POST /posts - יצירת פוסט חדש
-router.put('/:id', updatePostHandler);    // PUT /posts/:id - עדכון פוסט (רק בעלים)
-router.delete('/:id', deletePostHandler); // DELETE /posts/:id - מחיקת פוסט (רק בעלים)
+router.get('/', getPostsHandler);
+router.post('/', createPostHandler);
+router.put('/:id', updatePostHandler);
+router.delete('/:id', deletePostHandler);
 
-module.exports = router; // יצוא ה-router לשימוש ב-server.js
+module.exports = router;

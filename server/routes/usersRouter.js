@@ -1,11 +1,12 @@
-const express = require('express');                                    // טעינת Express
-const router = express.Router();                                       // יצירת router נפרד
-const { getUsers, getUser, postUser, putUser, putCredentials } = require('../controllers/usersController'); // טעינת הפונקציות
+const express = require('express');
+const router = express.Router();
+const { getUsers, getUser, postUser, putUser, putCredentials } = require('../controllers/usersController');
+const { authenticateToken } = require('../middleware/auth');
 
-router.get('/', getUsers);      // GET /users - שליפת כל המשתמשים
-router.get('/:id', getUser);   // GET /users/:id - שליפת משתמש לפי ID
-router.post('/', postUser);    // POST /users - יצירת משתמש חדש (הרשמה)
-router.put('/:id', putUser);                    // PUT /users/:id - עדכון פרטי משתמש
-router.put('/:id/credentials', putCredentials); // PUT /users/:id/credentials - עדכון שם משתמש/סיסמה
+router.get('/', authenticateToken, getUsers);
+router.get('/:id', authenticateToken, getUser);
+router.post('/', postUser);
+router.put('/:id', authenticateToken, putUser);
+router.put('/:id/credentials', authenticateToken, putCredentials);
 
-module.exports = router; // יצוא ה-router לשימוש ב-server.js
+module.exports = router;

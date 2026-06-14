@@ -1,5 +1,7 @@
-const { login } = require('../db/loginQueries');
+const { login } = require('../dal/loginQueries');
 const { serverError } = require('../utils/helpers');
+const jwt = require('jsonwebtoken');
+const { JWT_SECRET } = require('../middleware/auth');
 
 const handleLogin = async (req, res) => {
   const { username, password } = req.body;
@@ -8,7 +10,8 @@ const handleLogin = async (req, res) => {
   try {
     const user = await login(username, password);
     if (!user) return res.status(401).json({ message: 'Incorrect username or password' });
-    res.json(user);
+    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+    res.json({ user, token });
   } catch (err) { serverError(res, err); }
 };
 

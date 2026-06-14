@@ -1,10 +1,10 @@
-const express = require('express');                                                                              // טעינת Express
-const router = express.Router();                                                                                 // יצירת router נפרד
-const { getTodosHandler, createTodoHandler, updateTodoHandler, deleteTodoHandler } = require('../controllers/todosController'); // טעינת הפונקציות
+const express = require('express');
+const router = express.Router();
+const { getTodosHandler, createTodoHandler, updateTodoHandler, deleteTodoHandler } = require('../controllers/todosController');
 
-router.get('/', getTodosHandler);         // GET /todos או GET /todos?userId=X - שליפת משימות
-router.post('/', createTodoHandler);      // POST /todos - יצירת משימה חדשה
-router.put('/:id', updateTodoHandler);    // PUT /todos/:id - עדכון משימה לפי ID
-router.delete('/:id', deleteTodoHandler); // DELETE /todos/:id - מחיקת משימה לפי ID
+router.get('/', getTodosHandler);
+router.post('/', createTodoHandler);
+router.put('/:id', updateTodoHandler);
+router.delete('/:id', deleteTodoHandler);
 
-module.exports = router; // יצוא ה-router לשימוש ב-server.js
+module.exports = router;

@@ -1,8 +1,17 @@
+html {
+  cursor: default;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   border-radius: 0 !important;
+  cursor: inherit;
+}
+
+a {
+  cursor: pointer;
 }
 
 /* ---- משתני צבע גלובליים ---- */
@@ -98,6 +107,7 @@ button:hover {
 
 /* שדות קלט */
 input, textarea, select {
+  cursor: text;
   background: var(--surface);
   border: 1px solid var(--border);
   color: var(--text);

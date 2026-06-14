@@ -1,38 +1,69 @@
-import { useState } from 'react'; // hook לניהול state
+import { useState } from 'react';
 
-const BASE_URL = 'http://localhost:3001'; // כתובת השרת - פורט 3001
+const BASE_URL = 'http://localhost:3001';
 
-// hook מרכזי לביצוע קריאות API לשרת
+const clearSessionAndRedirect = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  window.location.href = '/login';
+};
+
 const useApi = () => {
-  const [loading, setLoading] = useState(false); // מצב טעינה - true בזמן בקשה
-  const [error, setError] = useState(null);      // שגיאה אחרונה שהתרחשה
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // פונקציה לביצוע בקשת HTTP לשרת
   const apiCall = async (endpoint, options = {}) => {
-    const response = await fetch(`${BASE_URL}${endpoint}`, { // שליחת הבקשה לשרת
-      headers: { 'Content-Type': 'application/json', ...options.headers }, // header לJSON + headers נוספים
-      ...options, // שאר האפשרויות (method, body וכו')
+    const token = localStorage.getItem('token');
+
+    const response = await fetch(`${BASE_URL}${endpoint}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+        ...options.headers,
+      },
+      ...options,
     });
-    if (!response.ok) throw new Error(`Error: ${response.status}`); // זריקת שגיאה אם הסטטוס לא 2xx
-    return await response.json(); // המרת התגובה ל-JSON והחזרה
+
+    if (!response.ok) {
+      let message = `Error: ${response.status}`;
+      try {
+        const data = await response.json();
+        if (data.message) message = data.message;
+      } catch {}
+
+      // 401 from our auth middleware always has this exact message.
+      // 401 from login/credentials endpoints has a different message — don't redirect those.
+      const isMissingToken = response.status === 401 && message === 'Access token required';
+      // 403 from our auth middleware always has this exact message.
+      // 403 from business logic (e.g. "Not authorized" on someone else's post) must NOT redirect.
+      const isInvalidToken = response.status === 403 && message === 'Invalid or expired token';
+
+      if (isMissingToken || isInvalidToken) {
+        clearSessionAndRedirect();
+        throw new Error(message);
+      }
+
+      throw new Error(message);
+    }
+
+    return response.json();
   };
 
-  // פונקציה עוטפת שמנהלת את מצב הטעינה והשגיאה אוטומטית
   const execute = async (apiFunction) => {
-    setLoading(true);  // מציין שבקשה מתבצעת
-    setError(null);    // מנקה שגיאה קודמת
+    setLoading(true);
+    setError(null);
     try {
-      const result = await apiFunction(); // הרצת פונקציית ה-API שהועברה
-      return result;   // החזרת התוצאה
+      const result = await apiFunction();
+      return result;
     } catch (err) {
-      setError(err.message); // שמירת הודעת השגיאה
-      throw err;             // זריקה מחדש כדי שהקומפוננטה תוכל לטפל בה
+      setError(err.message);
+      throw err;
     } finally {
-      setLoading(false); // תמיד מבטל את מצב הטעינה בסוף
+      setLoading(false);
     }
   };
 
-  return { apiCall, execute, loading, error }; // יצוא הפונקציות והמצבים
+  return { apiCall, execute, loading, error };
 };
 
 export default useApi;

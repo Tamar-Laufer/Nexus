@@ -1,7 +1,7 @@
-const express = require('express');                         // טעינת Express
-const router = express.Router();                            // יצירת router נפרד לנתיב זה
-const { handleLogin } = require('../controllers/loginController'); // טעינת הפונקציה מה-controller
+const express = require('express');                        
+const router = express.Router();                          
+const { handleLogin } = require('../controllers/loginController'); 
 
-router.post('/', handleLogin); // POST /login - מטפל בבקשת כניסה למערכת
+router.post('/', handleLogin); 
 
-module.exports = router; // יצוא ה-router לשימוש ב-server.js
+module.exports = router; 

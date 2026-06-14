@@ -1,20 +1,23 @@
-// hook גנרי לניהול state שנשמר אוטומטית ב-localStorage
-// כך הנתונים נשמרים גם לאחר ריענון הדפדפן
 import { useState, useEffect } from 'react';
 
 const useLocalStorage = (key, defaultValue) => {
-  // אתחול עצלן - קורא מ-localStorage פעם אחת בלבד, לא בכל render
   const [value, setValue] = useState(() => {
-    const saved = localStorage.getItem(key);
-    return saved ? JSON.parse(saved) : defaultValue;
+    try {
+      const saved = localStorage.getItem(key);
+      return saved !== null ? JSON.parse(saved) : defaultValue;
+    } catch {
+      // Corrupted value (e.g. "undefined" stored by a bug) — clean it up and use default
+      localStorage.removeItem(key);
+      return defaultValue;
+    }
   });
 
-  // בכל שינוי של value - מעדכן את localStorage אוטומטית
   useEffect(() => {
+    // Never write undefined — it serializes to the string "undefined" which JSON.parse can't read back
+    if (value === undefined) return;
     localStorage.setItem(key, JSON.stringify(value));
   }, [key, value]);
 
-  // מחזיר בדיוק כמו useState - [ערך, פונקציית עדכון]
   return [value, setValue];
 };
 

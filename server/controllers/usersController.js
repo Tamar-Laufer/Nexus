@@ -1,6 +1,8 @@
-const { getAllUsers, getUserById, createUser, updateUser, updateUsername, createPassword, verifyPassword, updatePassword } = require('../db/usersQueries');
+const { getAllUsers, getUserById, createUser, updateUser, updateUsername, createPassword, verifyPassword, updatePassword } = require('../dal/usersQueries');
 const { notFound, serverError } = require('../utils/helpers');
 const { getAll } = require('../services/getService');
+const jwt = require('jsonwebtoken');
+const { JWT_SECRET } = require('../middleware/auth');
 
 const getUsers = (_req, res) => getAll(res, getAllUsers);
 
@@ -12,17 +14,22 @@ const getUser = async (req, res) => {
   } catch (err) { serverError(res, err); }
 };
 
-// postUser נשאר נפרד - יש לו לוגיקה מיוחדת של שמירת סיסמה
 const postUser = async (req, res) => {
   try {
     const password = req.body.website;
     const newUser = await createUser(req.body);
-    if (password) await createPassword(newUser.id, password);
+    if (password) {
+      await createPassword(newUser.id, password);
+      const token = jwt.sign({ id: newUser.id, email: newUser.email }, JWT_SECRET, { expiresIn: '7d' });
+      return res.status(201).json({ user: newUser, token });
+    }
     res.status(201).json(newUser);
-  } catch (err) { serverError(res, err); }
+  } catch (err) {
+    if (err.code === 'ER_DUP_ENTRY') return res.status(409).json({ message: 'Username already exists' });
+    serverError(res, err);
+  }
 };
 
-// PUT /users/:id - עדכון פרטי משתמש (ללא username וסיסמה)
 const putUser = async (req, res) => {
   try {
     const user = await updateUser(req.params.id, req.body);
@@ -31,16 +38,13 @@ const putUser = async (req, res) => {
   } catch (err) { serverError(res, err); }
 };
 
-// PUT /users/:id/credentials - עדכון שם משתמש ו/או סיסמה אחרי אימות סיסמה ישנה
 const putCredentials = async (req, res) => {
   const { oldPassword, newUsername, newPassword } = req.body;
   try {
     const valid = await verifyPassword(req.params.id, oldPassword);
     if (!valid) return res.status(401).json({ message: 'Incorrect current password' });
-
     if (newUsername) await updateUsername(req.params.id, newUsername);
     if (newPassword) await updatePassword(req.params.id, newPassword);
-
     const user = await getUserById(req.params.id);
     res.json(user);
   } catch (err) { serverError(res, err); }

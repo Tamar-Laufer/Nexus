@@ -25,7 +25,6 @@ const UserInfo = ({ isOpen, onClose }) => {
           <button onClick={onClose} className="modal-close-button">×</button>
         </div>
 
-        {/* תצוגת פרטים */}
         {!isEditing && !isChangingCredentials && (
           <div className="user-info">
             <div className="user-info-item"><strong>Username</strong><span>{user?.username || '—'}</span></div>
@@ -37,7 +36,6 @@ const UserInfo = ({ isOpen, onClose }) => {
           </div>
         )}
 
-        {/* עריכת פרופיל - שימוש ברכיב Edit הגנרי, ללא כפתורים (הם ב-footer) */}
         {isEditing && (
           <div className="user-edit-form">
             <Edit label="Full Name"    value={form.name || ''}            setValue={(v) => setField('name', v)}       disabled={loading} showButtons={false} wrapperClass="edit-field" inputClass="edit-input" />
@@ -50,14 +48,11 @@ const UserInfo = ({ isOpen, onClose }) => {
           </div>
         )}
 
-        {/* עדכון credentials */}
         {isChangingCredentials && (
           <div className="user-edit-form">
             <Edit label="Current Password" type="password" value={creds.oldPassword}    setValue={(v) => setCredField('oldPassword', v)}     disabled={loading} showButtons={false} wrapperClass="edit-field" inputClass="edit-input" placeholder="Required" />
-            <div className="edit-divider">New credentials (fill what you want to change)</div>
-            <Edit label="New Username"     type="text"     value={creds.newUsername}     setValue={(v) => setCredField('newUsername', v)}     disabled={loading} showButtons={false} wrapperClass="edit-field" inputClass="edit-input" placeholder="Leave empty to keep current" autoFocus={false} />
-            <Edit label="New Password"     type="password" value={creds.newPassword}     setValue={(v) => setCredField('newPassword', v)}     disabled={loading} showButtons={false} wrapperClass="edit-field" inputClass="edit-input" placeholder="Leave empty to keep current" autoFocus={false} />
-            <Edit label="Confirm Password" type="password" value={creds.confirmPassword} setValue={(v) => setCredField('confirmPassword', v)} disabled={loading} showButtons={false} wrapperClass="edit-field" inputClass="edit-input" placeholder="Repeat new password"         autoFocus={false} />
+            <Edit label="New Password"     type="password" value={creds.newPassword}     setValue={(v) => setCredField('newPassword', v)}     disabled={loading} showButtons={false} wrapperClass="edit-field" inputClass="edit-input" placeholder="New password" autoFocus={false} />
+            <Edit label="Confirm Password" type="password" value={creds.confirmPassword} setValue={(v) => setCredField('confirmPassword', v)} disabled={loading} showButtons={false} wrapperClass="edit-field" inputClass="edit-input" placeholder="Repeat new password" autoFocus={false} />
             {error && <div className="edit-error">{error}</div>}
           </div>
         )}

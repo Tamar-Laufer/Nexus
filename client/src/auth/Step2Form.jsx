@@ -1,14 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
-//import useUsers from '../hooks/useUsers';
 
 const Step2Form = ({ formData, updateField, onBack }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const emailRef = useRef();
   const { register } = useAuth();
-  //const { createUser } = useUsers();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -52,7 +50,6 @@ const Step2Form = ({ formData, updateField, onBack }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      {/* גריד 2 עמודות - כל שדה תופס עמודה אחת */}
       <div className="step2-form-grid">
         <div className="form-group">
           <label className="form-label">Full Name:</label>

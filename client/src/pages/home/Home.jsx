@@ -1,12 +1,13 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
+import useApi from '../../hooks/useApi';
 import Layout from '../../shared/Layout';
 import './Home.css';
 
 const StatCard = ({ label, value, sub, color, onClick }) => (
   <div className={`stat-card stat-card--${color}`} onClick={onClick}>
-    <div className="stat-value">{value ?? '—'}</div>
+    <div className="stat-value">{value ?? '—”'}</div>
     <div className="stat-label">{label}</div>
     {sub !== undefined && <div className="stat-sub">{sub}</div>}
   </div>
@@ -15,6 +16,7 @@ const StatCard = ({ label, value, sub, color, onClick }) => (
 const Home = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { apiCall } = useApi();
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
@@ -22,8 +24,8 @@ const Home = () => {
     const fetchStats = async () => {
       try {
         const [todos, myPosts] = await Promise.all([
-          fetch(`http://localhost:3001/todos?userId=${user.id}`).then(r => r.json()),
-          fetch(`http://localhost:3001/posts?userId=${user.id}`).then(r => r.json())
+          apiCall(`/todos?userId=${user.id}`),
+          apiCall(`/posts?userId=${user.id}`)
         ]);
         const done = todos.filter(t => t.completed).length;
         setStats({ todos: todos.length, done, pending: todos.length - done, posts: myPosts.length });
@@ -48,15 +50,15 @@ const Home = () => {
         </div>
 
         <div className="stats-grid">
-          <StatCard label="My Tasks"  value={stats?.todos}   sub={`${stats?.done} completed`} color="blue"   onClick={() => navigate(`/users/${user.id}/todos`)} />
-          <StatCard label="Completed" value={stats?.done}    sub={`out of ${stats?.todos}`}   color="green"  onClick={() => navigate(`/users/${user.id}/todos`)} />
-          <StatCard label="Pending"   value={stats?.pending} sub="tasks left"                 color="orange" onClick={() => navigate(`/users/${user.id}/todos`)} />
-          <StatCard label="My Posts"  value={stats?.posts}                                    color="purple" onClick={() => navigate(`/users/${user.id}/posts`)} />
+          <StatCard label="My Tasks"  value={stats?.todos}   sub={`${stats?.done} completed`} color="blue"   onClick={() => navigate(`/users/${user.username}/todos`)} />
+          <StatCard label="Completed" value={stats?.done}    sub={`out of ${stats?.todos}`}   color="green"  onClick={() => navigate(`/users/${user.username}/todos`)} />
+          <StatCard label="Pending"   value={stats?.pending} sub="tasks left"                 color="orange" onClick={() => navigate(`/users/${user.username}/todos`)} />
+          <StatCard label="My Posts"  value={stats?.posts}                                    color="purple" onClick={() => navigate(`/users/${user.username}/posts`)} />
         </div>
 
         <div className="home-section-title">Quick Actions</div>
         <div className="quick-actions">
-          <div className="quick-action" onClick={() => navigate(`/users/${user.id}/todos`)}>
+          <div className="quick-action" onClick={() => navigate(`/users/${user.username}/todos`)}>
             <div className="quick-action__icon">✓</div>
             <div className="quick-action__text">
               <div className="quick-action__name">Todos</div>
@@ -64,7 +66,7 @@ const Home = () => {
             </div>
             <div className="quick-action__arrow">→</div>
           </div>
-          <div className="quick-action" onClick={() => navigate(`/users/${user.id}/posts`)}>
+          <div className="quick-action" onClick={() => navigate(`/users/${user.username}/posts`)}>
             <div className="quick-action__icon">✎</div>
             <div className="quick-action__text">
               <div className="quick-action__name">Posts</div>
@@ -78,9 +80,9 @@ const Home = () => {
         <div className="user-card">
           <div className="user-card__row"><span>Username</span><strong>{user?.username}</strong></div>
           <div className="user-card__row"><span>Email</span><strong>{user?.email}</strong></div>
-          <div className="user-card__row"><span>Phone</span><strong>{user?.phone || '—'}</strong></div>
-          <div className="user-card__row"><span>City</span><strong>{user?.address?.city || '—'}</strong></div>
-          <div className="user-card__row"><span>Company</span><strong>{user?.company?.name || '—'}</strong></div>
+          <div className="user-card__row"><span>Phone</span><strong>{user?.phone || '_'}</strong></div>
+          <div className="user-card__row"><span>City</span><strong>{user?.address?.city || '_'}</strong></div>
+          <div className="user-card__row"><span>Company</span><strong>{user?.company?.name || '_'}</strong></div>
         </div>
 
       </div>

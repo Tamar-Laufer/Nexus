@@ -11,7 +11,6 @@ const Posts = () => {
   const page         = { ...postsPage, ...commentsPage };
 
   if (!page.user) return <Navigate to="/login" replace />;
-
   return (
     <Layout>
       <PostsList page={page} />
